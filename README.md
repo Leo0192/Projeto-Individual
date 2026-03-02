@@ -1,4 +1,4 @@
-🎮 Projeto Individual — Cadastro de Jogos
+# 🎮 Projeto Individual — Cadastro de Jogos
 
 Projeto desenvolvido para a disciplina de Programação Web, com o objetivo de aplicar conceitos de integração entre Front-end (Vanilla JavaScript) e Back-end (Spring Boot) utilizando persistência em banco de dados MySQL.
 
