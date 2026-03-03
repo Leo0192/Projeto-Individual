@@ -2,7 +2,7 @@
 
 Projeto desenvolvido para a disciplina de Programação Web, com o objetivo de aplicar conceitos de integração entre Front-end (Vanilla JavaScript) e Back-end (Spring Boot) utilizando persistência em banco de dados MySQL.
 
-📋 Sobre o Projeto
+# 📋 Sobre o Projeto
 
 A aplicação consiste em um sistema de cadastro de jogos, permitindo:
 
@@ -18,7 +18,7 @@ Persistir informações em banco de dados
 
 O sistema foi desenvolvido seguindo as regras propostas no projeto individual da disciplina
 
-🛠️ Tecnologias Utilizadas
+# 🛠️ Tecnologias Utilizadas
 Front-end
 
 HTML5
@@ -39,7 +39,7 @@ JDBC Template
 
 MySQL
 
-🚀 Funcionalidades
+# 🚀 Funcionalidades
 
 ✅ Cadastro de Jogos
 
