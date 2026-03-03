@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Cadastro de Jogos</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1> Cadastro de Jogos</h1>
+
+<form id="formJogo">
+
+    <label>Nome</label>
+    <input type="text" id="nome" required>
+
+    <label>Preço</label>
+<input type="number" id="preco" step="0.01" min="0" required>
+
+    <label>Data de Lançamento</label>
+    <input type="date" id="dataLancamento" required>
+
+    <label>Plataforma</label>
+    <input type="text" id="plataforma" required>
+
+    <label>Categoria</label>
+    <select id="categoriaId" required>
+        <option>Carregando...</option>
+    </select>
+
+<label>Multiplayer</label>
+
+<div class="radio-group">
+
+    <label for="multiSim">
+        <input type="radio" id="multiSim" name="multiplayer" value="true" required>
+        Sim
+    </label>
+
+    <label for="multiNao">
+        <input type="radio" id="multiNao" name="multiplayer" value="false">
+        Não
+    </label>
+
+</div>
+
+    <button type="submit">Cadastrar</button>
+
+</form>
+
+<h2> Jogos cadastrados</h2>
+
+<div id="listaJogos"></div>
+
+</div>
+
+<script>
+
+const API = "http://localhost:8080/jogos";
+
+async function carregarJogos() {
+    try {
+        const resposta = await fetch(API);
+
+        if (resposta.status === 204) {
+            document.getElementById("listaJogos").innerHTML =
+                "<p>Nenhum jogo cadastrado.</p>";
+            return;
+        }
+
+        const jogos = await resposta.json();
+        const lista = document.getElementById("listaJogos");
+
+        lista.innerHTML = "";
+
+        jogos.forEach(jogo => {
+
+            const dataFormatada = jogo.dataLancamento
+                ? new Date(jogo.dataLancamento)
+                    .toLocaleDateString("pt-BR")
+                : "Não informado";
+
+            lista.innerHTML += `
+                <div class="card">
+                    <h3>${jogo.nome}</h3>
+
+                    <p><strong>R$ ${jogo.preco.toFixed(2)}</strong></p>
+
+                    <p>Lançamento: ${dataFormatada}</p>
+
+                    <p>Plataforma: ${jogo.plataforma}</p>
+
+                    <p>Multiplayer: ${jogo.multiplayer ? "Sim" : "Não"}</p>
+
+                    <p>Categoria: ${jogo.categoriaNome}</p>
+                </div>
+            `;
+        });
+
+    } catch (erro) {
+        console.error("Erro ao carregar jogos:", erro);
+    }
+}
+
+async function carregarCategorias() {
+    try {
+        const resposta = await fetch(`${API}/categorias`);
+
+        if (!resposta.ok) return;
+
+        const categorias = await resposta.json();
+        const select = document.getElementById("categoriaId");
+
+        select.innerHTML = "";
+
+        categorias.forEach(cat => {
+            select.innerHTML += `
+                <option value="${cat.id}">
+                    ${cat.nome}
+                </option>
+            `;
+        });
+
+    } catch (erro) {
+        console.error("Erro categorias:", erro);
+    }
+}
+
+document.getElementById("formJogo")
+.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    if (!nome.value.trim()) {
+        alert("Nome obrigatório!");
+        return;
+    }
+
+ if (preco.value < 0) {
+    alert("Preço não pode ser negativo!");
+    return;
+}
+
+    const multiplayerSelecionado =
+        document.querySelector('input[name="multiplayer"]:checked');
+
+    if (!multiplayerSelecionado) {
+        alert("Selecione se o jogo possui multiplayer.");
+        return;
+    }
+
+    const jogo = {
+        nome: nome.value.trim(),
+        preco: Number(preco.value),
+        dataLancamento: dataLancamento.value,
+        plataforma: plataforma.value.trim(),
+        categoriaId: Number(categoriaId.value),
+        multiplayer: multiplayerSelecionado.value === "true"
+    };
+
+    try {
+        const resposta = await fetch(API, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(jogo)
+        });
+
+        if (resposta.status === 201) {
+            alert(" Jogo cadastrado!");
+            formJogo.reset();
+            carregarJogos();
+
+        } else if (resposta.status === 409) {
+            alert(" Jogo já cadastrado!");
+
+        } else {
+            alert(" Dados inválidos.");
+        }
+
+    } catch (erro) {
+        console.error("Erro POST:", erro);
+    }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    carregarJogos();
+    carregarCategorias();
+});
+
+</script>
+
+</body>
+</html>
